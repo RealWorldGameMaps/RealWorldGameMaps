@@ -1,0 +1,16 @@
+{
+  "name": "real-world-game-maps",
+  "version": "0.0.1",
+  "description": "Create game-maps from real world data",
+  "main": "index.js",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "utif": "^3.0.0"
+  },
+  "scripts": {
+    "load": "node --experimental-modules index.mjs",
+    "tiff": "node --experimental-modules tiff.mjs"
+  },
+  "author": "Thomas Rupprecht",
+  "license": "MIT"
+}
