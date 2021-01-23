@@ -1,0 +1,28 @@
+// Made with flaME v1.10
+// Date: 2010/10/19 14:00:19
+// Author: Merowingg
+// License: GPL 2+
+
+level   Mero_SquaredV11-T1
+players 8
+type    14
+dataset MULTI_CAM_1
+game    "multiplay/maps/8c-Mero_SquaredV11.gam"
+data    "wrf/multi/skirmish8.wrf"
+data    "wrf/multi/fog1.wrf"
+
+level   Mero_SquaredV11-T2
+players 8
+type    18
+dataset MULTI_T2_C1
+game    "multiplay/maps/8c-Mero_SquaredV11.gam"
+data    "wrf/multi/t2-skirmish8.wrf"
+data    "wrf/multi/fog1.wrf"
+
+level   Mero_SquaredV11-T3
+players 8
+type    19
+dataset MULTI_T3_C1
+game    "multiplay/maps/8c-Mero_SquaredV11.gam"
+data    "wrf/multi/t3-skirmish8.wrf"
+data    "wrf/multi/fog1.wrf"
