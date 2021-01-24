@@ -15,10 +15,17 @@ mod warzone2100;
 // const HEADER_BYTES: u32 = 12;
 // const TILES_PER_PATCH_SIDE: u32 = 16;
 
+
 fn main() {
   let filename = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11/dinit.bjo";
   let dinit = warzone2100::parse_dinit_file(filename);
   println!("dinit: {:?}", dinit);
+
+
+  /*let filepath = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11.gam";
+  let game = warzone2100::parse_game_file(filepath);
+  println!("{:?}", game);*/
+
 
   // println!("num_droids: {:?} | {:?}", dinit.num_droids, dinit.droids.len());
 
