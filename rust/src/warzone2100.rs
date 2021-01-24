@@ -200,11 +200,18 @@ pub fn parse_dinit_file(filepath: &str) -> Dinit {
 }
 
 pub fn parse_game_file(filepath: &str) -> Game {
-  let file_reader = FileReader::new(filepath);
+  let mut file_reader = FileReader::new(filepath);
+
+  let magic = String::from(file_reader.read_str(0, 4));
+  let game_version = file_reader.read_u32(4);
+
+  if game_version > 35 { // big-endian
+    file_reader.little_endian = false;
+  }
 
   let mut game = Game {
-    magic: String::from(file_reader.read_str(0, 4)),
-    game_version: file_reader.read_u32(4),
+    magic,
+    game_version,
     game_time: file_reader.read_u32(8),
     game_type: file_reader.read_u32(12),
     scroll_min_x: file_reader.read_i32(16),

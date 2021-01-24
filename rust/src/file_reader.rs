@@ -6,7 +6,7 @@ use std::str;
 
 pub struct FileReader {
     bytes: Vec<u8>,
-    little_endian: bool,
+    pub little_endian: bool,
 }
 
 impl FileReader {
