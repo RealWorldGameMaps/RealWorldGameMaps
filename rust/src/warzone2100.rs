@@ -1,11 +1,6 @@
 use std::convert::TryInto;
 
-/*#[path="file_utils.rs"] mod file_utils;
-use file_utils::get_str_from_bytes;
-use file_utils::get_u32_from_bytes;*/
-
 #[path="file_reader.rs"] mod file_reader;
-
 use file_reader::FileReader;
 
 #[derive(Debug)]
@@ -68,7 +63,7 @@ struct Structure {
 }
 
 #[derive(Debug)]
-struct Feat {
+pub struct Feat {
   magic: String, // "feat"
   feat_version: u32,
   num_features: u32,
@@ -76,7 +71,7 @@ struct Feat {
 }
 #[derive(Debug)]
 struct Feature {
-  name: Vec<char>, // [char; if feat_version <= 19 { 40 } else { 60 }],
+  name: String, // [char; if feat_version <= 19 { 40 } else { 60 }],
   id: u32,
   coordinate: Coordinate,
   direction: u32,
@@ -85,7 +80,13 @@ struct Feature {
   _dummy_burn_start: u32,
   _dummy_burn_damage: u32,
 
-  visibility: u32, // if (feat_version >= 14)
+  visibility: [u8; 8], // if (feat_version >= 14)
+}
+#[derive(Debug)]
+struct Coordinate {
+  x: u32,
+  y: u32,
+  z: u32,
 }
 
 #[derive(Debug)]
@@ -114,8 +115,6 @@ struct Gateway {
   y2: u8,
 }
 
-
-
 #[derive(Debug)]
 pub struct Dinit {
   magic: String, // "dint"
@@ -136,12 +135,7 @@ struct Droid {
   _dummy_burn_damage: u32,
 }
 
-#[derive(Debug)]
-struct Coordinate {
-  x: u32,
-  y: u32,
-  z: u32,
-}
+
 
 #[derive(Debug)]
 pub struct Game {
@@ -158,7 +152,7 @@ pub struct Game {
 }
 
 #[derive(Debug)]
-pub struct Other {
+struct Other {
   power: u32,
   _dummy: u32,
 }
@@ -241,4 +235,49 @@ pub fn parse_game_file(filepath: &str) -> Game {
   }
 
   game
+}
+
+
+pub fn parse_feat_file(filepath: &str) -> Feat {
+  let file_reader = FileReader::new(filepath);
+  
+  let num_features = file_reader.read_u32(8);
+
+  let mut feat = Feat {
+    magic: String::from(file_reader.read_str(0, 4)),
+    feat_version: file_reader.read_u32(4),
+    num_features,
+    features: Vec::with_capacity(num_features as usize),
+  };
+  assert_eq!(feat.magic, "feat");
+
+  let max_name_length = if feat.feat_version <= 19 { 40 } else { 60 };
+
+  let mut offset = 12;
+  for i in 0..num_features {
+    let name = String::from(file_reader.read_str(offset, max_name_length));
+
+    let name_length = name.len();
+
+    let feature = Feature {
+      name,
+      id: file_reader.read_u32(offset + name_length),
+      coordinate: Coordinate {
+        x: file_reader.read_u32(offset + name_length + 4),
+        y: file_reader.read_u32(offset + name_length + 8),
+        z: file_reader.read_u32(offset + name_length + 12),
+      },
+      direction: file_reader.read_u32(offset + name_length + 16),
+      player: file_reader.read_u32(offset + name_length + 20),
+      _dummy_in_fire: file_reader.read_u32(offset + name_length + 24),
+      _dummy_burn_start: file_reader.read_u32(offset + name_length + 28),
+      _dummy_burn_damage: file_reader.read_u32(offset + name_length + 32),
+      visibility: file_reader.read_bytes(offset + name_length + 36, 8).try_into().unwrap(),
+    };
+
+    offset += name_length + 44;
+    feat.features.push(feature);
+  }
+
+  feat
 }

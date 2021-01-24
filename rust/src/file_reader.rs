@@ -47,4 +47,9 @@ impl FileReader {
         }
     }
 
+    pub fn read_bytes(&self, from: usize, length: usize) -> Vec<u8> {
+        let spliced = &self.bytes[from .. from + length];
+        spliced.try_into().unwrap()
+    }
+
 }

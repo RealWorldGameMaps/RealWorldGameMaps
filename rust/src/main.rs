@@ -17,14 +17,17 @@ mod warzone2100;
 
 
 fn main() {
-  let filename = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11/dinit.bjo";
+  /*let filename = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11/dinit.bjo";
   let dinit = warzone2100::parse_dinit_file(filename);
-  println!("dinit: {:?}", dinit);
-
+  println!("dinit: {:?}", dinit);*/
 
   /*let filepath = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11.gam";
   let game = warzone2100::parse_game_file(filepath);
   println!("{:?}", game);*/
+
+  let filepath = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11/feat.bjo";
+  let feat = warzone2100::parse_feat_file(filepath);
+  println!("{:?}", feat);
 
 
   // println!("num_droids: {:?} | {:?}", dinit.num_droids, dinit.droids.len());
