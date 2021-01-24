@@ -158,7 +158,7 @@ struct Coordinate {
 }
 
 pub fn parse_dinit_file(filepath: &str) -> Dinit {
-  let mut bytes = file_utils::read_file(filepath);
+  let bytes = file_utils::read_file(filepath);
   
   let magic = get_str_from_bytes(&bytes, 0, 4);
   let droid_version = get_u32_from_bytes(&bytes, 4);
