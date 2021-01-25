@@ -1,6 +1,11 @@
 mod warzone2100;
 
+mod file_writer;
+use file_writer::FileWriter;
+
 fn main() {
+
+
 	// Dinit
 	/*let filename = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11/dinit.bjo";
 	let dinit = warzone2100::parse_dinit_file(filename);
@@ -36,6 +41,7 @@ fn main() {
 	//println!("{:?}", warzone2100_map); // this line crashes the terminal inside of VS Code
 	//println!("{:?}", warzone2100_map.game); // better use this line for testing
 
+	/*
 	let map_reader = warzone2100::MapReader::new("../data/warzone2100/8c-Mero_SquaredV11.wz");
 	let warzone2100_map = map_reader.read();
 
@@ -48,6 +54,10 @@ fn main() {
 	let dinit_str = format!("{:?}", dinit);
 	let dinit2_str = format!("{:?}", warzone2100_map.dinit);
 	assert_eq!(dinit_str, dinit2_str);
+	*/
+
+	let file_writer = FileWriter::new("../data/generated.txt", 100);
+	file_writer.write_string(0, "hello world!", 12);
 
 	// println!("num_droids: {:?} | {:?}", dinit.num_droids, dinit.droids.len());
 }
