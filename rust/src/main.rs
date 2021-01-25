@@ -37,6 +37,11 @@ fn main() {
   let ttype = warzone2100::parse_ttypes_file(filepath);
   println!("{:?}", ttype);*/
 
+  // Struct
+  let filepath = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11/struct.bjo";
+  let struct_obj = warzone2100::parse_struct_file(filepath);
+  println!("{:?}", struct_obj);
+
 
   // println!("num_droids: {:?} | {:?}", dinit.num_droids, dinit.droids.len());
 
