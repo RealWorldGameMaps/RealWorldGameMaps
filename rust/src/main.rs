@@ -38,9 +38,14 @@ fn main() {
   println!("{:?}", ttype);*/
 
   // Struct
-  let filepath = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11/struct.bjo";
+  /*let filepath = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11/struct.bjo";
   let struct_obj = warzone2100::parse_struct_file(filepath);
-  println!("{:?}", struct_obj);
+  println!("{:?}", struct_obj);*/
+
+  // Map
+  let filepath = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11/game.map";
+  let map = warzone2100::parse_map_file(filepath);
+  println!("{:?}", map);
 
 
   // println!("num_droids: {:?} | {:?}", dinit.num_droids, dinit.droids.len());

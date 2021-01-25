@@ -90,7 +90,7 @@ struct Coordinate {
 }
 
 #[derive(Debug)]
-struct Map {
+pub struct Map {
   magic: String, // "map "
   map_version: u32,
   width: u32,
@@ -452,4 +452,57 @@ pub fn parse_struct_file(filepath: &str) -> Struct {
   }
 
   struct_obj
+}
+
+pub fn parse_map_file(filepath: &str) -> Map {
+  let file_reader = FileReader::new(filepath);
+
+  let mut offset = 0;
+
+  let magic = String::from(file_reader.read_str(offset, 4));
+  let map_version = file_reader.read_u32(offset + 4);
+  let width = file_reader.read_u32(offset + 8);
+  let height = file_reader.read_u32(offset + 12);
+  offset += 16;
+
+  assert_eq!(magic, "map ");
+  let area = width * height;
+
+  let mut tiles = Vec::with_capacity(area as usize);
+  for _i in 0..area {
+    tiles.push(Tile {
+      texture: file_reader.read_u16(offset),
+      height: file_reader.read_u8(offset + 2),
+    });
+
+    /*
+    for (j = 0; j < MAX_PLAYERS; j++) {
+			map->mMapTiles[i].tileVisBits = (uint8_t)(map->mMapTiles[i].tileVisBits &~ (uint8_t)(1 << j));
+		}
+    */
+    offset += 3;
+  }
+
+  let gw_version = file_reader.read_u32(offset);
+  let num_gateways = file_reader.read_u32(offset + 4);
+  offset += 8;
+
+  let mut gateways = Vec::with_capacity(num_gateways as usize);
+
+  for _i in 0..num_gateways {
+    let gateway = Gateway {
+      x1: file_reader.read_u8(offset),
+      y1: file_reader.read_u8(offset + 1),
+      x2: file_reader.read_u8(offset + 2),
+      y2: file_reader.read_u8(offset + 3),
+    };
+    gateways.push(gateway);
+    offset +=  4;
+  }
+
+  let map = Map {
+    magic, map_version, width, height, tiles, gw_version, num_gateways, gateways
+  };
+
+  map
 }
