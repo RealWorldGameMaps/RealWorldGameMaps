@@ -4,11 +4,11 @@ use std::convert::TryInto;
 use file_reader::FileReader;
 
 #[derive(Debug)]
-struct TType {
+pub struct TType {
   magic: String, // "ttyp"
   terrain_version: u32,
   num_terrain_types: u32,
-  terrain_types: Vec<u16>,
+  terrain_types: Vec<u8>,
 }
 
 #[derive(Debug)]
@@ -285,4 +285,30 @@ pub fn parse_feat_file(filepath: &str) -> Feat {
   }
 
   feat
+}
+
+pub fn parse_ttypes_file(filepath: &str) -> TType {
+  let file_reader = FileReader::new(filepath);
+
+  let mut num_terrain_types = file_reader.read_u32(8);
+
+  const MAX_TILE_TEXTURES: u32 = 255;
+  if num_terrain_types >= MAX_TILE_TEXTURES {
+    num_terrain_types = MAX_TILE_TEXTURES - 1;
+  }
+
+  let mut ttype = TType {
+    magic: String::from(file_reader.read_str(0, 4)),
+    terrain_version: file_reader.read_u32(4),
+    num_terrain_types,
+    terrain_types: Vec::with_capacity(num_terrain_types as usize),
+  };
+  assert_eq!(ttype.magic, "ttyp");
+
+  for i in 0..num_terrain_types {
+    let offset = 12 + 2 * (i as usize);
+    ttype.terrain_types.push(file_reader.read_u16(offset) as u8); 
+  }
+
+  ttype
 }
