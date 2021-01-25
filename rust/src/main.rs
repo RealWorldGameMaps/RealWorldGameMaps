@@ -43,9 +43,13 @@ fn main() {
   println!("{:?}", struct_obj);*/
 
   // Map
-  let filepath = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11/game.map";
+  /*let filepath = "../data/warzone2100/8c-Mero_SquaredV11/multiplay/maps/8c-Mero_SquaredV11/game.map";
   let map = warzone2100::parse_map_file(filepath);
-  println!("{:?}", map);
+  println!("{:?}", map);*/
+
+  let map_reader = warzone2100::MapReader::new("../data/warzone2100/8c-Mero_SquaredV11.wz");
+  let warzone2100_map = map_reader.read();
+  //println!("{:?}", warzone2100_map); // this line crashes the terminal inside of VS Code
 
 
   // println!("num_droids: {:?} | {:?}", dinit.num_droids, dinit.droids.len());
