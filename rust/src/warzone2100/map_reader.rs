@@ -12,8 +12,7 @@ use tempfile::TempDir;
 #[path="../file_reader.rs"] mod file_reader;
 use file_reader::FileReader;
 
-#[path="defs.rs"] mod defs;
-use defs::{Dinit, Map, Struct, Structure, Feature, Feat, Gateway, Tile, Game, Other, Droid, Coordinate, TType, Warzone2100Map};
+use super::defs::{Dinit, Map, Struct, Structure, Feature, Feat, Gateway, Tile, Game, Other, Droid, Coordinate, TType, Warzone2100Map};
 
 pub struct MapReader {
     filepath: &'static str,

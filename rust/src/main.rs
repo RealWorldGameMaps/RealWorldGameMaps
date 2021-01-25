@@ -47,10 +47,24 @@ fn main() {
   let map = warzone2100::parse_map_file(filepath);
   println!("{:?}", map);*/
 
+  //let map_reader = warzone2100::MapReader::new("../data/warzone2100/8c-Mero_SquaredV11.wz");
+  //let warzone2100_map = map_reader.read();
+  //println!("{:?}", warzone2100_map); // this line crashes the terminal inside of VS Code
+  //println!("{:?}", warzone2100_map.game); // better use this line for testing
+
   let map_reader = warzone2100::MapReader::new("../data/warzone2100/8c-Mero_SquaredV11.wz");
   let warzone2100_map = map_reader.read();
-  //println!("{:?}", warzone2100_map); // this line crashes the terminal inside of VS Code
-  println!("{:?}", warzone2100_map.game); // better use this line for testing
+
+  let map_writer = warzone2100::MapWriter::new("../data/warzone2100/generated/generated.wz");
+  map_writer.write_dinit_file("../data/warzone2100/generated/dinit.bjo", &warzone2100_map.dinit);
+
+  let map_reader2 = warzone2100::MapReader::new("not used");
+  let dinit = map_reader2.parse_dinit_file("../data/warzone2100/generated/dinit.bjo");
+
+  let dinit_str = format!("{:?}", dinit);
+  let dinit2_str = format!("{:?}", warzone2100_map.dinit);
+  assert_eq!(dinit_str, dinit2_str);
+
 
 
   // println!("num_droids: {:?} | {:?}", dinit.num_droids, dinit.droids.len());
