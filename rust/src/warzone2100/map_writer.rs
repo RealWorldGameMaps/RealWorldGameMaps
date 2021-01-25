@@ -1,7 +1,7 @@
 use std::convert::TryInto;
 use std::fs::File;
-use std::path::PathBuf;
 use std::path::Path;
+use std::path::PathBuf;
 
 extern crate compress_tools;
 use compress_tools::*;
@@ -9,18 +9,15 @@ use compress_tools::*;
 extern crate tempfile;
 use tempfile::TempDir;
 
-use super::defs::{Game, Struct, Feature, Feat, Structure, Map, Dinit, Droid, Gateway, Tile, TType, Warzone2100Map};
+use super::defs::{Dinit, Droid, Feat, Feature, Game, Gateway, Map, Struct, Structure, TType, Tile, Warzone2100Map};
 
 pub struct MapWriter {
   filepath: &'static str,
 }
 
 impl MapWriter {
-
   pub fn new(filepath: &'static str) -> MapWriter {
-    MapWriter {
-      filepath
-    }
+    MapWriter { filepath }
   }
 
   pub fn write(&self, warzone2100_map: &Warzone2100Map, map_name: &str) {
@@ -63,32 +60,17 @@ impl MapWriter {
     self.write_ttypes_file(ttypes_file_path.to_str().unwrap(), &warzone2100_map.ttype);
   }
 
-  pub fn write_addon_file(&self, filepath: &str) {
+  pub fn write_addon_file(&self, filepath: &str) {}
 
-  }
+  pub fn write_game_file(&self, filepath: &str, game: &Game) {}
 
-  pub fn write_game_file(&self, filepath: &str, game: &Game) {
+  pub fn write_dinit_file(&self, filepath: &str, dinit: &Dinit) {}
 
-  }
+  pub fn write_map_file(&self, filepath: &str, map: &Map) {}
 
-  pub fn write_dinit_file(&self, filepath: &str, dinit: &Dinit) {
+  pub fn write_struct_file(&self, filepath: &str, struct_obj: &Struct) {}
 
-  }
+  pub fn write_feat_file(&self, filepath: &str, feat: &Feat) {}
 
-  pub fn write_map_file(&self, filepath: &str, map: &Map) {
-
-  }
-
-  pub fn write_struct_file(&self, filepath: &str, struct_obj: &Struct) {
-
-  }
-
-  pub fn write_feat_file(&self, filepath: &str, feat: &Feat) {
-
-  }
-
-  pub fn write_ttypes_file(&self, filepath: &str, ttype: &TType) {
-
-  }
-
+  pub fn write_ttypes_file(&self, filepath: &str, ttype: &TType) {}
 }

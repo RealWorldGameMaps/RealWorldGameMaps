@@ -1,7 +1,7 @@
 use std::convert::TryInto;
+use std::ffi::OsStr;
 use std::fs::File;
 use std::path::PathBuf;
-use std::ffi::OsStr;
 
 extern crate compress_tools;
 use compress_tools::*;
@@ -9,21 +9,21 @@ use compress_tools::*;
 extern crate tempfile;
 use tempfile::TempDir;
 
-#[path="../file_reader.rs"] mod file_reader;
+#[path = "../file_reader.rs"]
+mod file_reader;
 use file_reader::FileReader;
 
-use super::defs::{Dinit, Map, Struct, Structure, Feature, Feat, Gateway, Tile, Game, Other, Droid, Coordinate, TType, Warzone2100Map};
+use super::defs::{
+  Coordinate, Dinit, Droid, Feat, Feature, Game, Gateway, Map, Other, Struct, Structure, TType, Tile, Warzone2100Map,
+};
 
 pub struct MapReader {
   filepath: &'static str,
 }
 
 impl MapReader {
-
   pub fn new(filepath: &'static str) -> MapReader {
-    MapReader {
-      filepath,
-    }
+    MapReader { filepath }
   }
 
   pub fn read(&self) -> Warzone2100Map {
@@ -34,9 +34,11 @@ impl MapReader {
     let paths: Vec<_> = std::fs::read_dir(tempdir.path()).unwrap().map(|r| r.unwrap()).collect();
 
     // find *.addon.lev path
-    let addon_file_path = paths.iter().find(|dir| {
-      dir.path().to_str().unwrap().ends_with(".addon.lev")
-    }).unwrap().path();
+    let addon_file_path = paths
+      .iter()
+      .find(|dir| dir.path().to_str().unwrap().ends_with(".addon.lev"))
+      .unwrap()
+      .path();
 
     // extract map name
     let filename = addon_file_path.file_name().and_then(OsStr::to_str).unwrap();
@@ -80,7 +82,7 @@ impl MapReader {
       struct_obj,
       map,
       game,
-      ttype
+      ttype,
     }
   }
 
@@ -126,7 +128,8 @@ impl MapReader {
     let magic = String::from(file_reader.read_str(0, 4));
     let game_version = file_reader.read_u32(4);
 
-    if game_version > 35 { // big-endian
+    if game_version > 35 {
+      // big-endian
       file_reader.little_endian = false;
     }
 
@@ -154,16 +157,12 @@ impl MapReader {
           _dummy: 0,
         });
       } else {
-        game.other.push(Other {
-          power: 0,
-          _dummy: 0,
-        });
+        game.other.push(Other { power: 0, _dummy: 0 });
       }
     }
 
     game
   }
-
 
   pub fn parse_feat_file(&self, filepath: &str) -> Feat {
     let file_reader = FileReader::new(filepath);
@@ -179,9 +178,13 @@ impl MapReader {
     assert_eq!(feat.magic, "feat");
 
     let name_length = if feat.feat_version <= 19 { 40 } else { 60 };
-    let feature_size = if feat.feat_version >= 14 { name_length + 44 } else { name_length + 36 };
-    for i in 0..num_features {
+    let feature_size = if feat.feat_version >= 14 {
+      name_length + 44
+    } else {
+      name_length + 36
+    };
 
+    for i in 0..num_features {
       let offset = 12 + feature_size * (i as usize);
 
       let name = String::from(file_reader.read_str(offset, name_length));
@@ -341,7 +344,11 @@ impl MapReader {
       };
 
       let structure = Structure {
-        name, id, coordinate, direction, player,
+        name,
+        id,
+        coordinate,
+        direction,
+        player,
         _dummy_in_fire: dummy_in_fire,
         _dummy_burn_start: dummy_burn_start,
         _dummy_burn_damage: dummy_burn_damage,
@@ -369,7 +376,8 @@ impl MapReader {
         _dummy_droid_time_started: dummy_droid_time_started,
         _dummy_time_to_build: dummy_time_to_build,
         _dummy_time_start_hold: dummy_time_start_hold,
-        visibility, research_name,
+        visibility,
+        research_name,
         _dummy_dummy_3: dummy_dummy_3,
         _dummy_structure_padding_7: dummy_structure_padding_7,
         _dummy_dummy_4: dummy_dummy_4,
@@ -424,14 +432,18 @@ impl MapReader {
         y2: file_reader.read_u8(offset + 3),
       };
       gateways.push(gateway);
-      offset +=  4;
+      offset += 4;
     }
 
-    let map = Map {
-      magic, map_version, width, height, tiles, gw_version, num_gateways, gateways
-    };
-
-    map
+    Map {
+      magic,
+      map_version,
+      width,
+      height,
+      tiles,
+      gw_version,
+      num_gateways,
+      gateways,
+    }
   }
-
 }

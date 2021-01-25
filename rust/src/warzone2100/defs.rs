@@ -39,22 +39,22 @@ pub struct Structure {
   pub _dummy_capacity: u32,
   pub _dummy_quantity: u32,
 
-  pub _dummy_factory_inc: u32, // if (struct_version >= 12)
-  pub _dummy_loops_performed: u8, // if (struct_version >= 12)
+  pub _dummy_factory_inc: u32,        // if (struct_version >= 12)
+  pub _dummy_loops_performed: u8,     // if (struct_version >= 12)
   pub _dummy_structure_padding_4: u8, // if (struct_version >= 12)
   pub _dummy_structure_padding_5: u8, // if (struct_version >= 12)
   pub _dummy_structure_padding_6: u8, // if (struct_version >= 12)
-  pub _dummy_power_accrued: u32, // if (struct_version >= 12)
-  pub _dummy_dummy_2: u32, // if (struct_version >= 12)
+  pub _dummy_power_accrued: u32,      // if (struct_version >= 12)
+  pub _dummy_dummy_2: u32,            // if (struct_version >= 12)
   pub _dummy_droid_time_started: u32, // if (struct_version >= 12)
-  pub _dummy_time_to_build: u32, // if (struct_version >= 12)
-  pub _dummy_time_start_hold: u32, // if (struct_version >= 12)
+  pub _dummy_time_to_build: u32,      // if (struct_version >= 12)
+  pub _dummy_time_start_hold: u32,    // if (struct_version >= 12)
 
-  pub visibility: [u8; 8], // if (struct_version >= 14)
-  pub research_name: String, // [char; if struct_version <= 19 { 40 } else { 60 }], // if (struct_version >= 15)
-  pub _dummy_dummy_3: i16, // if (struct_version >= 17)
+  pub visibility: [u8; 8],             // if (struct_version >= 14)
+  pub research_name: String,           // [char; if struct_version <= 19 { 40 } else { 60 }], // if (struct_version >= 15)
+  pub _dummy_dummy_3: i16,             // if (struct_version >= 17)
   pub _dummy_structure_padding_7: i16, // if (struct_version >= 15)
-  pub _dummy_dummy_4: u32, // if (struct_version >= 21)
+  pub _dummy_dummy_4: u32,             // if (struct_version >= 21)
 }
 
 #[derive(Debug)]
