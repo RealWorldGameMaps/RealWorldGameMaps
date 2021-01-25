@@ -1,5 +1,6 @@
 const TILES_PER_PATCH_SIDE: u32 = 16;
 
+#[derive(Debug)]
 struct PMP {
   // Header
   magic: [char; 4], // "PSMP"
@@ -14,16 +15,19 @@ struct PMP {
   patches: [Patch; map_size.pow(2)], // lines indexed from bottom to top, columns from left to right
 }
 
+#[derive(Debug)]
 struct Patch {
   tiles: [Tile; TILES_PER_PATCH_SIDE.pow(2)],
 }
 
+#[derive(Debug)]
 struct Tile {
   texture1: u16, // index into terrain_textures[]
   texture2: u16, // index, or 0xFFFF for 'none'
   priority: u32, // Used for blending between edges of tiles with different textures. A higher priority is blended on top of a lower priority.
 }
 
+#[derive(Debug)]
 struct TerrainTexture {
   name_length: u32,
   name: [char; name_length], // filenames without path and extension
