@@ -50,7 +50,7 @@ fn main() {
   let map_reader = warzone2100::MapReader::new("../data/warzone2100/8c-Mero_SquaredV11.wz");
   let warzone2100_map = map_reader.read();
   //println!("{:?}", warzone2100_map); // this line crashes the terminal inside of VS Code
-  println!("{:?}", warzone2100_map.game.level_name); // better use this line for testing
+  println!("{:?}", warzone2100_map.game); // better use this line for testing
 
 
   // println!("num_droids: {:?} | {:?}", dinit.num_droids, dinit.droids.len());

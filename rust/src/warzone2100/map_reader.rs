@@ -1,6 +1,7 @@
 use std::convert::TryInto;
 use std::fs::File;
 use std::path::PathBuf;
+use std::ffi::OsStr;
 
 extern crate compress_tools;
 use compress_tools::*;
@@ -34,14 +35,12 @@ pub struct MapReader {
       let paths: Vec<_> = std::fs::read_dir(tempdir.path()).unwrap().map(|r| r.unwrap()).collect();
   
       // find *.addon.lev path
-      let addon_file_path = paths.iter().find(|&dir| {
-        dir.path().into_os_string().into_string().unwrap().ends_with(".addon.lev")
-      }).unwrap();
+      let addon_file_path = paths.iter().find(|dir| {
+        dir.path().to_str().unwrap().ends_with(".addon.lev")
+      }).unwrap().path();
       
       // extract map name
-      let path_str = addon_file_path.path().into_os_string().into_string().unwrap();
-      let pieces = path_str.split("/");
-      let filename = pieces.last().unwrap();
+      let filename = addon_file_path.file_name().and_then(OsStr::to_str).unwrap();
       let map_name = String::from(filename).replace(".addon.lev", "");
       
       // build paths
@@ -52,29 +51,29 @@ pub struct MapReader {
   
       let mut game_path = path.clone();
       game_path.push(map_name.clone() + ".gam");
-      let game = self.parse_game_file(Box::leak(game_path.into_os_string().into_string().unwrap().into_boxed_str()));
+      let game = self.parse_game_file(game_path.to_str().unwrap());
   
       path.push(map_name);
   
       let mut dinit_path = path.clone();
       dinit_path.push("dinit.bjo");
-      let dinit = self.parse_dinit_file(Box::leak(dinit_path.into_os_string().into_string().unwrap().into_boxed_str()));
+      let dinit = self.parse_dinit_file(dinit_path.to_str().unwrap());
   
       let mut feat_path = path.clone();
       feat_path.push("feat.bjo");
-      let feat = self.parse_feat_file(Box::leak(feat_path.into_os_string().into_string().unwrap().into_boxed_str()));
+      let feat = self.parse_feat_file(feat_path.to_str().unwrap());
   
       let mut struct_path = path.clone();
       struct_path.push("struct.bjo");
-      let struct_obj = self.parse_struct_file(Box::leak(struct_path.into_os_string().into_string().unwrap().into_boxed_str()));
+      let struct_obj = self.parse_struct_file(struct_path.to_str().unwrap());
   
       let mut ttype_path = path.clone();
       ttype_path.push("ttypes.ttp");
-      let ttype = self.parse_ttypes_file(Box::leak(ttype_path.into_os_string().into_string().unwrap().into_boxed_str()));
+      let ttype = self.parse_ttypes_file(ttype_path.to_str().unwrap());
   
       let mut map_path = path.clone();
       map_path.push("game.map");
-      let map = self.parse_map_file(Box::leak(map_path.into_os_string().into_string().unwrap().into_boxed_str()));
+      let map = self.parse_map_file(map_path.to_str().unwrap());
   
       Warzone2100Map {
         dinit,
