@@ -38,7 +38,7 @@ pub struct Structure {
   pub _dummy_output: u32,
   pub _dummy_capacity: u32,
   pub _dummy_quantity: u32,
-  
+
   pub _dummy_factory_inc: u32, // if (struct_version >= 12)
   pub _dummy_loops_performed: u8, // if (struct_version >= 12)
   pub _dummy_structure_padding_4: u8, // if (struct_version >= 12)
@@ -49,7 +49,7 @@ pub struct Structure {
   pub _dummy_droid_time_started: u32, // if (struct_version >= 12)
   pub _dummy_time_to_build: u32, // if (struct_version >= 12)
   pub _dummy_time_start_hold: u32, // if (struct_version >= 12)
-  
+
   pub visibility: [u8; 8], // if (struct_version >= 14)
   pub research_name: String, // [char; if struct_version <= 19 { 40 } else { 60 }], // if (struct_version >= 15)
   pub _dummy_dummy_3: i16, // if (struct_version >= 17)
@@ -62,7 +62,7 @@ pub struct Feat {
   pub magic: String, // "feat"
   pub feat_version: u32,
   pub num_features: u32,
-  pub features: Vec<Feature>,
+  pub features: Vec<Feature>, // Capacity: num_features
 }
 
 #[derive(Debug)]
@@ -75,7 +75,7 @@ pub struct Feature {
   pub _dummy_in_fire: u32,
   pub _dummy_burn_start: u32,
   pub _dummy_burn_damage: u32,
-  
+
   pub visibility: [u8; 8], // if (feat_version >= 14)
 }
 
@@ -95,7 +95,7 @@ pub struct Map {
   pub tiles: Vec<Tile>, // [Tile; width * height],
   pub gw_version: u32,
   pub num_gateways: u32,
-  pub gateways: Vec<Gateway>, // [Gateway; num_gateways],
+  pub gateways: Vec<Gateway>, // Capacity: num_gateways
 }
 
 #[derive(Debug)]
@@ -117,7 +117,7 @@ pub struct Dinit {
   pub magic: String, // "dint"
   pub droid_version: u32,
   pub num_droids: u32,
-  pub droids: Vec<Droid>,
+  pub droids: Vec<Droid>, // Capacity: num_droids
 }
 
 #[derive(Debug)]
