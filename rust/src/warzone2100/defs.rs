@@ -1,3 +1,5 @@
+
+
 #[derive(Debug)]
 pub struct TType {
   pub magic: String, // "ttyp"
