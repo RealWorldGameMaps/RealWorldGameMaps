@@ -35,9 +35,9 @@ impl FileReader {
 	pub fn read_u32(&self, from: usize) -> u32 {
 		let spliced = &self.bytes[from..from + 4];
 		if self.little_endian {
-			return u32::from_le_bytes(spliced.try_into().unwrap());
+			u32::from_le_bytes(spliced.try_into().unwrap())
 		} else {
-			return u32::from_be_bytes(spliced.try_into().unwrap());
+			u32::from_be_bytes(spliced.try_into().unwrap())
 		}
 	}
 
@@ -45,9 +45,9 @@ impl FileReader {
 	pub fn read_i32(&self, from: usize) -> i32 {
 		let spliced = &self.bytes[from..from + 4];
 		if self.little_endian {
-			return i32::from_le_bytes(spliced.try_into().unwrap());
+			i32::from_le_bytes(spliced.try_into().unwrap())
 		} else {
-			return i32::from_be_bytes(spliced.try_into().unwrap());
+			i32::from_be_bytes(spliced.try_into().unwrap())
 		}
 	}
 
@@ -55,9 +55,9 @@ impl FileReader {
 	pub fn read_u16(&self, from: usize) -> u16 {
 		let spliced = &self.bytes[from..from + 2];
 		if self.little_endian {
-			return u16::from_le_bytes(spliced.try_into().unwrap());
+			u16::from_le_bytes(spliced.try_into().unwrap())
 		} else {
-			return u16::from_be_bytes(spliced.try_into().unwrap());
+			u16::from_be_bytes(spliced.try_into().unwrap())
 		}
 	}
 
@@ -65,9 +65,9 @@ impl FileReader {
 	pub fn read_i16(&self, from: usize) -> i16 {
 		let spliced = &self.bytes[from..from + 2];
 		if self.little_endian {
-			return i16::from_le_bytes(spliced.try_into().unwrap());
+			i16::from_le_bytes(spliced.try_into().unwrap())
 		} else {
-			return i16::from_be_bytes(spliced.try_into().unwrap());
+			i16::from_be_bytes(spliced.try_into().unwrap())
 		}
 	}
 
@@ -75,9 +75,9 @@ impl FileReader {
 	pub fn read_u8(&self, from: usize) -> u8 {
 		let spliced = &self.bytes[from..from + 1];
 		if self.little_endian {
-			return u8::from_le_bytes(spliced.try_into().unwrap());
+			u8::from_le_bytes(spliced.try_into().unwrap())
 		} else {
-			return u8::from_be_bytes(spliced.try_into().unwrap());
+			u8::from_be_bytes(spliced.try_into().unwrap())
 		}
 	}
 
@@ -85,9 +85,9 @@ impl FileReader {
 	pub fn read_i8(&self, from: usize) -> i8 {
 		let spliced = &self.bytes[from..from + 1];
 		if self.little_endian {
-			return i8::from_le_bytes(spliced.try_into().unwrap());
+			i8::from_le_bytes(spliced.try_into().unwrap())
 		} else {
-			return i8::from_be_bytes(spliced.try_into().unwrap());
+			i8::from_be_bytes(spliced.try_into().unwrap())
 		}
 	}
 
