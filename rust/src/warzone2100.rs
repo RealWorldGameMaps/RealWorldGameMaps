@@ -251,13 +251,19 @@ pub fn parse_feat_file(filepath: &str) -> Feat {
   };
   assert_eq!(feat.magic, "feat");
 
-  let max_name_length = if feat.feat_version <= 19 { 40 } else { 60 };
-
-  let mut offset = 12;
+  let name_length = if feat.feat_version <= 19 { 40 } else { 60 };
+  let feature_size = if feat.feat_version >= 14 { name_length + 44 } else { name_length + 36 };
   for i in 0..num_features {
-    let name = String::from(file_reader.read_str(offset, max_name_length));
+    
+    let offset = 12 + feature_size * (i as usize);
 
-    let name_length = name.len();
+    let name = String::from(file_reader.read_str(offset, name_length));
+
+    let visibility = if feat.feat_version >= 14 {
+      file_reader.read_bytes(offset + name_length + 36, 8).try_into().unwrap()
+    } else {
+      [0, 0, 0, 0, 0, 0, 0, 0]
+    };
 
     let feature = Feature {
       name,
@@ -272,10 +278,9 @@ pub fn parse_feat_file(filepath: &str) -> Feat {
       _dummy_in_fire: file_reader.read_u32(offset + name_length + 24),
       _dummy_burn_start: file_reader.read_u32(offset + name_length + 28),
       _dummy_burn_damage: file_reader.read_u32(offset + name_length + 32),
-      visibility: file_reader.read_bytes(offset + name_length + 36, 8).try_into().unwrap(),
+      visibility,
     };
 
-    offset += name_length + 44;
     feat.features.push(feature);
   }
 
