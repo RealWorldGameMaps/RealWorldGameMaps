@@ -1,5 +1,7 @@
 mod warzone2100;
 
+use std::fmt::format;
+
 use compress_tools::*;
 
 fn main() {
@@ -50,15 +52,20 @@ fn main() {
 	*/
 
 	// Test for map deserialization/serialization
-
-
-	let filepath = "../data/warzone2100/8c-Mero_SquaredV11.wz";
-	let map_reader = warzone2100::MapReader::new(filepath);
+	let map_reader = warzone2100::MapReader::new("../data/warzone2100/8c-Mero_SquaredV11.wz");
 	let warzone2100_map = map_reader.read();
 
 	let map_writer = warzone2100::MapWriter::new("../data/warzone2100/generated.wz");
 	map_writer.write(&warzone2100_map, "8c-Mero_SquaredV11");
 
+
+	let map_checker = warzone2100::MapReader::new("../data/warzone2100/generated.wz");
+	let warzone2100_map_check = map_checker.read();
+
+	let formatted = format!("{:?}", warzone2100_map);
+	let formatted_check = format!("{:?}", warzone2100_map_check);
+
+	assert_eq!(formatted, formatted_check);
 
 	// FileWriter
 	/*let mut file_writer = FileWriter::new("../data/generated.txt");

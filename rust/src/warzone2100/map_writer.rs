@@ -247,7 +247,7 @@ impl MapWriter {
 		file_writer.write_u32(ttype.num_terrain_types);
 
 		for terrain_type in ttype.terrain_types.iter() {
-			file_writer.write_u8(terrain_type.clone());
+			file_writer.write_u16(terrain_type.clone() as u16);
 		}
 
 		file_writer.bytes
