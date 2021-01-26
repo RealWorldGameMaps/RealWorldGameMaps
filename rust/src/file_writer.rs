@@ -6,25 +6,30 @@ use bincode::serialize;
 
 pub struct FileWriter {
 	pub bytes: Vec<u8>,
-  pub little_endian: bool,
+	pub little_endian: bool,
 }
 
 impl FileWriter {
-
-  pub fn new(initial_buffer_size: usize) -> FileWriter {
-    FileWriter {
+	pub fn new(initial_buffer_size: usize) -> FileWriter {
+		FileWriter {
 			bytes: Vec::with_capacity(initial_buffer_size),
-      little_endian: true,
-    }
+			little_endian: true,
+		}
 	}
 
 	pub fn write_to_file(&self, filepath: &str) {
-		let mut file = OpenOptions::new().read(true).write(true).truncate(true).create(true).open(filepath).unwrap();
+		let mut file = OpenOptions::new()
+			.read(true)
+			.write(true)
+			.truncate(true)
+			.create(true)
+			.open(filepath)
+			.unwrap();
 		file.write_all(&self.bytes[..]).unwrap();
 		file.flush().unwrap();
 	}
 
-  pub fn write_str(&mut self, value: &str, max_length: usize) {
+	pub fn write_str(&mut self, value: &str, max_length: usize) {
 		for i in 0..value.len() {
 			self.bytes.push(value.as_bytes()[i]);
 		}
@@ -66,6 +71,4 @@ impl FileWriter {
 		let data = serialize(&value).unwrap();
 		self.write_bytes(data);
 	}
-
-
 }

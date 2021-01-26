@@ -1,7 +1,7 @@
 use std::convert::TryInto;
 use std::ffi::OsStr;
-use std::path::PathBuf;
 use std::fs::OpenOptions;
+use std::path::PathBuf;
 
 extern crate compress_tools;
 use compress_tools::*;
@@ -9,7 +9,8 @@ use compress_tools::*;
 extern crate tempfile;
 use tempfile::TempDir;
 
-#[path = "../file_reader.rs"] mod file_reader;
+#[path = "../file_reader.rs"]
+mod file_reader;
 use file_reader::FileReader;
 
 use super::defs::*;
@@ -20,9 +21,7 @@ pub struct MapReader {
 
 impl MapReader {
 	pub fn new(filepath: &'static str) -> MapReader {
-		MapReader {
-			filepath
-		}
+		MapReader { filepath }
 	}
 
 	pub fn read(&self) -> Warzone2100Map {

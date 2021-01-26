@@ -1,11 +1,12 @@
 use std::fs::File;
-use std::path::PathBuf;
 use std::io::Write;
+use std::path::PathBuf;
 
 extern crate zip;
 use zip::write::{FileOptions, ZipWriter};
 
-#[path="../file_writer.rs"] mod file_writer;
+#[path = "../file_writer.rs"]
+mod file_writer;
 use file_writer::FileWriter;
 
 use super::defs::*;
@@ -271,5 +272,4 @@ impl MapWriter {
 
 		file_writer.bytes
 	}
-
 }
