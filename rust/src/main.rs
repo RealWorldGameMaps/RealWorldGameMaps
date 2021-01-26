@@ -3,6 +3,7 @@ mod warzone2100;
 mod file_writer;
 use file_writer::FileWriter;
 
+
 fn main() {
 
 
@@ -42,6 +43,7 @@ fn main() {
 	//println!("{:?}", warzone2100_map.game); // better use this line for testing
 
 	/*
+	// Test for map deserialization/serialization
 	let map_reader = warzone2100::MapReader::new("../data/warzone2100/8c-Mero_SquaredV11.wz");
 	let warzone2100_map = map_reader.read();
 
@@ -56,8 +58,18 @@ fn main() {
 	assert_eq!(dinit_str, dinit2_str);
 	*/
 
-	let file_writer = FileWriter::new("../data/generated.txt", 100);
-	file_writer.write_string(0, "hello world!", 12);
+
+	// FileWriter
+	let mut file_writer = FileWriter::new("../data/generated.txt");
+	file_writer.write_str("Hello World", 11);
+	file_writer.write_u32(std::u32::MAX);
+
+	for i in 0..255 {
+		file_writer.write_u8(i as u8);
+	}
+
+	file_writer.flush();
+
 
 	// println!("num_droids: {:?} | {:?}", dinit.num_droids, dinit.droids.len());
 }

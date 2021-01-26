@@ -1,48 +1,76 @@
 
+extern crate bincode;
+
+use bincode::serialize;
+
 use std::fs::File;
-use std::io::SeekFrom;
 use std::fs::OpenOptions;
+use std::io::prelude::*;
 
 pub struct FileWriter {
-  bytes: Vec<u8>,
-  filepath: &str,
+	file: File,
   pub little_endian: bool,
 }
 
 impl FileWriter {
 
-  pub fn new(filepath: &str, initial_buffer_size: usize) -> FileWriter {
+  pub fn new(filepath: &'static str) -> FileWriter {
     FileWriter {
-      bytes: Vec::with_capacity(initial_buffer_size),
-      filepath,
+			file: OpenOptions::new().read(true).write(true).truncate(true).open(filepath).unwrap(),
       little_endian: true,
     }
   }
 
-  pub fn write(&self) {
-    let file = File::open(self.filepath).unwrap();
-
-    file.write_all(self.bytes).unwrap();
-  }
-
-  pub fn write_str(&self, from: usize, value: &str, max_length: usize) {
-		self.bytes.splice(from .. from + max_length, value.as_bytes().iter().cloned());
-  }
-
-  pub fn write_bytes(&self, from: usize, value: Vec<u8>) {
-		self.bytes.splice(from .. from + value.len(), value);
+	pub fn flush(&mut self) {
+		self.file.flush().unwrap();
 	}
 
-  pub fn write_u8(&self, from: usize, value: u8) {
-    self.bytes[from] = value.as();
+  pub fn write_str(&mut self, value: &str, max_length: usize) {
+		let mut bytes = Vec::with_capacity(max_length);
+
+		for i in 0..value.len() {
+			bytes.push(value.as_bytes()[i]);
+		}
+		for _i in value.len()..max_length {
+			bytes.push(0);
+		}
+
+		self.file.write(&bytes).unwrap();
 	}
 
-  pub fn write_u16(&self, from: usize, value: u16) {
-    if self.little_endian {
-      self.bytes.splice(from .. from + 2, value.into_be_bytes());
-    } else {
-      self.bytes.splice(from .. from + 2, value);
-    }
-  }
+	pub fn write_bytes(&mut self, value: Vec<u8>) {
+		self.file.write(&value).unwrap();
+	}
+
+	pub fn write_u32(&mut self, value: u32) {
+		let data = serialize(&value).unwrap();
+		self.file.write(&data).unwrap();
+	}
+
+	pub fn write_i32(&mut self, value: i32) {
+		let data = serialize(&value).unwrap();
+		self.file.write(&data).unwrap();
+	}
+
+	pub fn write_u16(&mut self, value: u16) {
+		let data = serialize(&value).unwrap();
+		self.file.write(&data).unwrap();
+	}
+
+	pub fn write_i16(&mut self, value: i16) {
+		let data = serialize(&value).unwrap();
+		self.file.write(&data).unwrap();
+	}
+
+	pub fn write_u8(&mut self, value: u8) {
+		let data = serialize(&value).unwrap();
+		self.file.write(&data).unwrap();
+	}
+
+	pub fn write_i8(&mut self, value: i8) {
+		let data = serialize(&value).unwrap();
+		self.file.write(&data).unwrap();
+	}
+
 
 }
