@@ -1,6 +1,5 @@
 use std::convert::TryInto;
 use std::ffi::OsStr;
-use std::fs::File;
 use std::path::PathBuf;
 use std::fs::OpenOptions;
 
@@ -10,13 +9,10 @@ use compress_tools::*;
 extern crate tempfile;
 use tempfile::TempDir;
 
-#[path = "../file_reader.rs"]
-mod file_reader;
+#[path = "../file_reader.rs"] mod file_reader;
 use file_reader::FileReader;
 
-use super::defs::{
-	Coordinate, Dinit, Droid, Feat, Feature, Game, Gateway, Map, Other, Struct, Structure, TType, Tile, Warzone2100Map,
-};
+use super::defs::*;
 
 pub struct MapReader {
 	filepath: &'static str,
@@ -47,7 +43,7 @@ impl MapReader {
 		let filename = addon_file_path.file_name().and_then(OsStr::to_str).unwrap();
 		let map_name = String::from(filename).replace(".addon.lev", "");
 
-		// build paths
+		// build paths, read files and parse the data into structs
 		let mut path = PathBuf::new();
 		path.push(tempdir.path());
 		path.push("multiplay");
