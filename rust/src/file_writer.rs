@@ -1,11 +1,8 @@
-
-extern crate bincode;
-
-use bincode::serialize;
-
-use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
+
+extern crate bincode;
+use bincode::serialize;
 
 pub struct FileWriter {
 	pub bytes: Vec<u8>,
