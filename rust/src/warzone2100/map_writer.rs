@@ -4,6 +4,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::convert::AsRef;
 use std::fs;
+use std::io::{Seek, Write};
 
 extern crate compress_tools;
 use compress_tools::*;
@@ -30,18 +31,18 @@ impl MapWriter {
 	}
 
 	pub fn write(&self, warzone2100_map: &Warzone2100Map, map_name: &str) {
-		let tempdir = TempDir::new().unwrap();
+		//let tempdir = TempDir::new().unwrap();
 
-		let mut path = PathBuf::new();
-		path.push(tempdir.path().to_str().unwrap());
+		//let mut path = PathBuf::new();
+		//path.push(tempdir.path().to_str().unwrap());
 
-		let mut addon_file_name = String::from(map_name);
+		/*let mut addon_file_name = String::from(map_name);
 		addon_file_name.push_str(".addon.lev");
 		let mut addon_file_path = path.clone();
-		addon_file_path.push(addon_file_name);
-		self.write_addon_file(addon_file_path.to_str().unwrap());
+		addon_file_path.push(addon_file_name);*/
+		let addon_buf = self.get_addon_file();
 
-		path.push("multiplay");
+		/*path.push("multiplay");
 		fs::create_dir(&path).unwrap();
 		path.push("maps");
 		fs::create_dir(&path).unwrap();
@@ -49,33 +50,99 @@ impl MapWriter {
 		let mut game_file_name = String::from(map_name);
 		game_file_name.push_str(".gam");
 		let mut game_file_path = path.clone();
-		game_file_path.push(game_file_name);
-		self.write_game_file(game_file_path.to_str().unwrap(), &warzone2100_map.game);
+		game_file_path.push(game_file_name);*/
+		let game_buf = self.get_game_file(&warzone2100_map.game);
 
-		path.push(map_name);
+		/*path.push(map_name);
 		fs::create_dir(&path).unwrap();
 
 		let mut dinit_file_path = path.clone();
+		dinit_file_path.push("dinit.bjo");*/
+		let dinit_buf = self.get_dinit_file(&warzone2100_map.dinit);
+
+		/*let mut feat_file_path = path.clone();
+		feat_file_path.push("feat.bjo");*/
+		let feat_buf = self.get_feat_file(&warzone2100_map.feat);
+
+		/*let mut struct_file_path = path.clone();
+		struct_file_path.push("struct.bjo");*/
+		let struct_buf = self.get_struct_file(&warzone2100_map.struct_obj);
+
+		/*let mut ttypes_file_path = path.clone();
+		ttypes_file_path.push("ttypes.ttp");*/
+		let ttypes_buf = self.get_ttypes_file(&warzone2100_map.ttype);
+
+		let map_buf = self.get_map_file(&warzone2100_map.map);
+
+		let file = File::create(self.filepath).unwrap();
+
+		let mut zip = ZipWriter::new(file);
+
+
+		let mut addon_file_name = map_name.to_owned();
+		addon_file_name.push_str(".addon.lev");
+
+		zip.start_file(addon_file_name, FileOptions::default()).unwrap();
+		zip.write(&addon_buf[..]).unwrap();
+		//zip.finish().unwrap();
+
+		let mut path = PathBuf::new();
+		path.push("multiplay");
+		path.push("maps");
+
+		let mut game_file_name = map_name.to_owned();
+		game_file_name.push_str(".gam");
+
+		let mut game_file_path = path.clone();
+		game_file_path.push(game_file_name);
+
+		zip.start_file(game_file_path.to_str().unwrap(), FileOptions::default()).unwrap();
+		zip.write(&game_buf[..]).unwrap();
+		//zip.finish().unwrap();
+
+		path.push(map_name);
+
+
+		let mut dinit_file_path = path.clone();
 		dinit_file_path.push("dinit.bjo");
-		self.write_dinit_file(dinit_file_path.to_str().unwrap(), &warzone2100_map.dinit);
+		zip.start_file(dinit_file_path.to_str().unwrap(), FileOptions::default()).unwrap();
+		zip.write(&dinit_buf[..]).unwrap();
+		//zip.finish().unwrap();
 
 		let mut feat_file_path = path.clone();
 		feat_file_path.push("feat.bjo");
-		self.write_feat_file(feat_file_path.to_str().unwrap(), &warzone2100_map.feat);
+		zip.start_file(feat_file_path.to_str().unwrap(), FileOptions::default()).unwrap();
+		zip.write(&feat_buf[..]).unwrap();
+		//zip.finish().unwrap();
+
+		let mut map_file_path = path.clone();
+		map_file_path.push("game.map");
+		zip.start_file(map_file_path.to_str().unwrap(), FileOptions::default()).unwrap();
+		zip.write(&map_buf[..]).unwrap();
+		//zip.finish().unwrap();
 
 		let mut struct_file_path = path.clone();
 		struct_file_path.push("struct.bjo");
-		self.write_struct_file(struct_file_path.to_str().unwrap(), &warzone2100_map.struct_obj);
+		zip.start_file(struct_file_path.to_str().unwrap(), FileOptions::default()).unwrap();
+		zip.write(&struct_buf[..]).unwrap();
+		//zip.finish().unwrap();
 
 		let mut ttypes_file_path = path.clone();
 		ttypes_file_path.push("ttypes.ttp");
-		self.write_ttypes_file(ttypes_file_path.to_str().unwrap(), &warzone2100_map.ttype);
+		zip.start_file(ttypes_file_path.to_str().unwrap(), FileOptions::default()).unwrap();
+		zip.write(&ttypes_buf[..]).unwrap();
+
+
+		zip.finish().unwrap();
 	}
 
-	pub fn write_addon_file(&self, filepath: &str) {}
+	pub fn get_addon_file(&self) -> Vec<u8> {
+		let temp: Vec<u8> = Vec::new();
+		temp
+	}
 
-	pub fn write_game_file(&self, filepath: &str, game: &Game) {
-		let mut file_writer = FileWriter::new(filepath);
+	pub fn get_game_file(&self, game: &Game) -> Vec<u8> {
+		let mut file_writer = FileWriter::new(0);
 		file_writer.write_str(&game.magic[..], game.magic.len());
 		file_writer.write_u32(game.game_version);
 		if game.game_version > 35 {
@@ -95,11 +162,11 @@ impl MapWriter {
 			file_writer.write_u32(other._dummy);
 		}
 
-		file_writer.flush();
+		file_writer.bytes
 	}
 
-	pub fn write_dinit_file(&self, filepath: &str, dinit: &Dinit) {
-		let mut file_writer = FileWriter::new(filepath);
+	pub fn get_dinit_file(&self, dinit: &Dinit) -> Vec<u8> {
+		let mut file_writer = FileWriter::new(0);
 		file_writer.write_str(&dinit.magic[..], dinit.magic.len());
 		file_writer.write_u32(dinit.droid_version);
 		file_writer.write_u32(dinit.num_droids);
@@ -119,11 +186,11 @@ impl MapWriter {
 			file_writer.write_u32(droid._dummy_burn_damage);
 		}
 
-		file_writer.flush();
+		file_writer.bytes
 	}
 
-	pub fn write_map_file(&self, filepath: &str, map: &Map) {
-		let mut file_writer = FileWriter::new(filepath);
+	pub fn get_map_file(&self, map: &Map) -> Vec<u8> {
+		let mut file_writer = FileWriter::new(0);
 		file_writer.write_str(&map.magic[..], map.magic.len());
 		file_writer.write_u32(map.map_version);
 		file_writer.write_u32(map.width);
@@ -144,11 +211,11 @@ impl MapWriter {
 			file_writer.write_u8(gateway.y2);
 		}
 
-		file_writer.flush();
+		file_writer.bytes
 	}
 
-	pub fn write_feat_file(&self, filepath: &str, feat: &Feat) {
-		let mut file_writer = FileWriter::new(filepath);
+	pub fn get_feat_file(&self, feat: &Feat) -> Vec<u8> {
+		let mut file_writer = FileWriter::new(0);
 		file_writer.write_str(&feat.magic[..], feat.magic.len());
 		file_writer.write_u32(feat.feat_version);
 		file_writer.write_u32(feat.num_features);
@@ -170,11 +237,11 @@ impl MapWriter {
 			}
 		}
 
-		file_writer.flush();
+		file_writer.bytes
 	}
 
-	pub fn write_ttypes_file(&self, filepath: &str, ttype: &TType) {
-		let mut file_writer = FileWriter::new(filepath);
+	pub fn get_ttypes_file(&self, ttype: &TType) -> Vec<u8> {
+		let mut file_writer = FileWriter::new(0);
 		file_writer.write_str(&ttype.magic[..], ttype.magic.len());
 		file_writer.write_u32(ttype.terrain_version);
 		file_writer.write_u32(ttype.num_terrain_types);
@@ -183,11 +250,11 @@ impl MapWriter {
 			file_writer.write_u8(terrain_type.clone());
 		}
 
-		file_writer.flush();
+		file_writer.bytes
 	}
 
-	pub fn write_struct_file(&self, filepath: &str, struct_obj: &Struct) {
-		let mut file_writer = FileWriter::new(filepath);
+	pub fn get_struct_file(&self, struct_obj: &Struct) -> Vec<u8> {
+		let mut file_writer = FileWriter::new(0);
 		file_writer.write_str(&struct_obj.magic[..], struct_obj.magic.len());
 		file_writer.write_u32(struct_obj.struct_version);
 		file_writer.write_u32(struct_obj.num_structures);
@@ -253,7 +320,7 @@ impl MapWriter {
 			}
 		}
 
-		file_writer.flush();
+		file_writer.bytes
 	}
 
 }

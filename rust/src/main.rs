@@ -52,11 +52,11 @@ fn main() {
 	// Test for map deserialization/serialization
 
 
-	let filepath = "../../../data/warzone2100/8c-Mero_SquaredV11.wz";
+	let filepath = "../data/warzone2100/8c-Mero_SquaredV11.wz";
 	let map_reader = warzone2100::MapReader::new(filepath);
 	let warzone2100_map = map_reader.read();
 
-	let map_writer = warzone2100::MapWriter::new("../../../data/warzone2100/generated.wz");
+	let map_writer = warzone2100::MapWriter::new("../data/warzone2100/generated.wz");
 	map_writer.write(&warzone2100_map, "8c-Mero_SquaredV11");
 
 
