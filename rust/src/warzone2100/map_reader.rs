@@ -2,6 +2,7 @@ use std::convert::TryInto;
 use std::ffi::OsStr;
 use std::fs::File;
 use std::path::PathBuf;
+use std::fs::OpenOptions;
 
 extern crate compress_tools;
 use compress_tools::*;
@@ -23,12 +24,14 @@ pub struct MapReader {
 
 impl MapReader {
 	pub fn new(filepath: &'static str) -> MapReader {
-		MapReader { filepath }
+		MapReader {
+			filepath
+		}
 	}
 
 	pub fn read(&self) -> Warzone2100Map {
 		let tempdir = TempDir::new().unwrap();
-		let file = File::open(self.filepath).unwrap();
+		let file = OpenOptions::new().read(true).open(self.filepath).unwrap();
 		uncompress_archive(file, tempdir.path(), Ownership::Ignore).unwrap();
 
 		let paths: Vec<_> = std::fs::read_dir(tempdir.path()).unwrap().map(|r| r.unwrap()).collect();

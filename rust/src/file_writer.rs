@@ -14,9 +14,10 @@ pub struct FileWriter {
 
 impl FileWriter {
 
-  pub fn new(filepath: &'static str) -> FileWriter {
+  pub fn new(filepath: &str) -> FileWriter {
+		let file = OpenOptions::new().read(true).write(true).truncate(true).create(true).open(filepath);
     FileWriter {
-			file: OpenOptions::new().read(true).write(true).truncate(true).open(filepath).unwrap(),
+			file: file.unwrap(),
       little_endian: true,
     }
   }

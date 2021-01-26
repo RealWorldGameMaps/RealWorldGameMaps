@@ -2,12 +2,21 @@ use std::convert::TryInto;
 use std::fs::File;
 use std::path::Path;
 use std::path::PathBuf;
+use std::convert::AsRef;
+use std::fs;
 
 extern crate compress_tools;
 use compress_tools::*;
 
+extern crate zip;
+use zip::result::ZipResult;
+use zip::write::{FileOptions, ZipWriter};
+
 extern crate tempfile;
 use tempfile::TempDir;
+
+#[path="../file_writer.rs"] mod file_writer;
+use file_writer::FileWriter;
 
 use super::defs::{Dinit, Droid, Feat, Feature, Game, Gateway, Map, Struct, Structure, TType, Tile, Warzone2100Map};
 
@@ -33,7 +42,9 @@ impl MapWriter {
 		self.write_addon_file(addon_file_path.to_str().unwrap());
 
 		path.push("multiplay");
+		fs::create_dir(&path).unwrap();
 		path.push("maps");
+		fs::create_dir(&path).unwrap();
 
 		let mut game_file_name = String::from(map_name);
 		game_file_name.push_str(".gam");
@@ -42,6 +53,7 @@ impl MapWriter {
 		self.write_game_file(game_file_path.to_str().unwrap(), &warzone2100_map.game);
 
 		path.push(map_name);
+		fs::create_dir(&path).unwrap();
 
 		let mut dinit_file_path = path.clone();
 		dinit_file_path.push("dinit.bjo");
@@ -62,15 +74,186 @@ impl MapWriter {
 
 	pub fn write_addon_file(&self, filepath: &str) {}
 
-	pub fn write_game_file(&self, filepath: &str, game: &Game) {}
+	pub fn write_game_file(&self, filepath: &str, game: &Game) {
+		let mut file_writer = FileWriter::new(filepath);
+		file_writer.write_str(&game.magic[..], game.magic.len());
+		file_writer.write_u32(game.game_version);
+		if game.game_version > 35 {
+			file_writer.little_endian = false;
+		}
 
-	pub fn write_dinit_file(&self, filepath: &str, dinit: &Dinit) {}
+		file_writer.write_u32(game.game_time);
+		file_writer.write_u32(game.game_type);
+		file_writer.write_i32(game.scroll_min_x);
+		file_writer.write_i32(game.scroll_min_y);
+		file_writer.write_u32(game.scroll_max_x);
+		file_writer.write_u32(game.scroll_max_y);
+		file_writer.write_str(&game.level_name[..], 20);
 
-	pub fn write_map_file(&self, filepath: &str, map: &Map) {}
+		for other in game.other.iter() {
+			file_writer.write_u32(other.power);
+			file_writer.write_u32(other._dummy);
+		}
 
-	pub fn write_struct_file(&self, filepath: &str, struct_obj: &Struct) {}
+		file_writer.flush();
+	}
 
-	pub fn write_feat_file(&self, filepath: &str, feat: &Feat) {}
+	pub fn write_dinit_file(&self, filepath: &str, dinit: &Dinit) {
+		let mut file_writer = FileWriter::new(filepath);
+		file_writer.write_str(&dinit.magic[..], dinit.magic.len());
+		file_writer.write_u32(dinit.droid_version);
+		file_writer.write_u32(dinit.num_droids);
 
-	pub fn write_ttypes_file(&self, filepath: &str, ttype: &TType) {}
+		let name_length = if dinit.droid_version <= 19 { 40 } else { 60 };
+
+		for droid in dinit.droids.iter() {
+			file_writer.write_str(&droid.name[..], name_length);
+			file_writer.write_u32(droid.id);
+			file_writer.write_u32(droid.coordinate.x);
+			file_writer.write_u32(droid.coordinate.y);
+			file_writer.write_u32(droid.coordinate.z);
+			file_writer.write_u32(droid.direction);
+			file_writer.write_u32(droid.player);
+			file_writer.write_u32(droid._dummy_in_fire);
+			file_writer.write_u32(droid._dummy_burn_start);
+			file_writer.write_u32(droid._dummy_burn_damage);
+		}
+
+		file_writer.flush();
+	}
+
+	pub fn write_map_file(&self, filepath: &str, map: &Map) {
+		let mut file_writer = FileWriter::new(filepath);
+		file_writer.write_str(&map.magic[..], map.magic.len());
+		file_writer.write_u32(map.map_version);
+		file_writer.write_u32(map.width);
+		file_writer.write_u32(map.height);
+
+		for tile in map.tiles.iter() {
+			file_writer.write_u16(tile.texture);
+			file_writer.write_u8(tile.height);
+		}
+
+		file_writer.write_u32(map.gw_version);
+		file_writer.write_u32(map.num_gateways);
+
+		for gateway in map.gateways.iter() {
+			file_writer.write_u8(gateway.x1);
+			file_writer.write_u8(gateway.y1);
+			file_writer.write_u8(gateway.x2);
+			file_writer.write_u8(gateway.y2);
+		}
+
+		file_writer.flush();
+	}
+
+	pub fn write_feat_file(&self, filepath: &str, feat: &Feat) {
+		let mut file_writer = FileWriter::new(filepath);
+		file_writer.write_str(&feat.magic[..], feat.magic.len());
+		file_writer.write_u32(feat.feat_version);
+		file_writer.write_u32(feat.num_features);
+
+		let name_length = if feat.feat_version <= 19 { 40 } else { 60 };
+		for feature in feat.features.iter() {
+			file_writer.write_str(&feature.name[..], name_length);
+			file_writer.write_u32(feature.id);
+			file_writer.write_u32(feature.coordinate.x);
+			file_writer.write_u32(feature.coordinate.y);
+			file_writer.write_u32(feature.coordinate.z);
+			file_writer.write_u32(feature.direction);
+			file_writer.write_u32(feature.player);
+			file_writer.write_u32(feature._dummy_in_fire);
+			file_writer.write_u32(feature._dummy_burn_start);
+			file_writer.write_u32(feature._dummy_burn_damage);
+			if feat.feat_version >= 14 {
+				file_writer.write_bytes(feature.visibility.to_vec());
+			}
+		}
+
+		file_writer.flush();
+	}
+
+	pub fn write_ttypes_file(&self, filepath: &str, ttype: &TType) {
+		let mut file_writer = FileWriter::new(filepath);
+		file_writer.write_str(&ttype.magic[..], ttype.magic.len());
+		file_writer.write_u32(ttype.terrain_version);
+		file_writer.write_u32(ttype.num_terrain_types);
+
+		for terrain_type in ttype.terrain_types.iter() {
+			file_writer.write_u8(terrain_type.clone());
+		}
+
+		file_writer.flush();
+	}
+
+	pub fn write_struct_file(&self, filepath: &str, struct_obj: &Struct) {
+		let mut file_writer = FileWriter::new(filepath);
+		file_writer.write_str(&struct_obj.magic[..], struct_obj.magic.len());
+		file_writer.write_u32(struct_obj.struct_version);
+		file_writer.write_u32(struct_obj.num_structures);
+
+		let name_length = if struct_obj.struct_version <= 19 { 40 } else { 60 };
+		for structure in struct_obj.structures.iter() {
+			file_writer.write_str(&structure.name[..], name_length);
+			file_writer.write_u32(structure.id);
+			file_writer.write_u32(structure.coordinate.x);
+			file_writer.write_u32(structure.coordinate.y);
+			file_writer.write_u32(structure.coordinate.z);
+			file_writer.write_u32(structure.direction);
+			file_writer.write_u32(structure.player);
+			file_writer.write_u32(structure._dummy_in_fire);
+			file_writer.write_u32(structure._dummy_burn_start);
+			file_writer.write_u32(structure._dummy_burn_damage);
+			file_writer.write_u8(structure._dummy_status);
+			file_writer.write_u8(structure._dummy_structure_padding_1);
+			file_writer.write_u8(structure._dummy_structure_padding_2);
+			file_writer.write_u8(structure._dummy_structure_padding_3);
+			file_writer.write_i32(structure._dummy_current_build_pts);
+			file_writer.write_u32(structure._dummy_body);
+			file_writer.write_u32(structure._dummy_armour);
+			file_writer.write_u32(structure._dummy_resistance);
+			file_writer.write_u32(structure._dummy_dummy_1);
+			file_writer.write_u32(structure._dummy_subject_inc);
+			file_writer.write_u32(structure._dummy_time_started);
+			file_writer.write_u32(structure._dummy_output);
+			file_writer.write_u32(structure._dummy_capacity);
+			file_writer.write_u32(structure._dummy_quantity);
+
+			if struct_obj.struct_version >= 12 {
+				file_writer.write_u32(structure._dummy_factory_inc);
+				file_writer.write_u8(structure._dummy_loops_performed);
+				file_writer.write_u8(structure._dummy_structure_padding_4);
+				file_writer.write_u8(structure._dummy_structure_padding_5);
+				file_writer.write_u8(structure._dummy_structure_padding_6);
+				file_writer.write_u32(structure._dummy_power_accrued);
+				file_writer.write_u32(structure._dummy_dummy_2);
+				file_writer.write_u32(structure._dummy_droid_time_started);
+				file_writer.write_u32(structure._dummy_time_to_build);
+				file_writer.write_u32(structure._dummy_time_start_hold);
+			}
+
+			if struct_obj.struct_version >= 14 {
+				file_writer.write_bytes(structure.visibility.to_vec());
+			}
+
+			if struct_obj.struct_version >= 15 {
+				file_writer.write_str(&structure.research_name[..], name_length);
+			}
+
+			if struct_obj.struct_version >= 17 {
+				file_writer.write_i16(structure._dummy_dummy_3);
+			}
+
+			if struct_obj.struct_version >= 15 {
+				file_writer.write_i16(structure._dummy_structure_padding_7);
+			}
+
+			if struct_obj.struct_version >= 21 {
+				file_writer.write_u32(structure._dummy_dummy_4);
+			}
+		}
+
+		file_writer.flush();
+	}
+
 }

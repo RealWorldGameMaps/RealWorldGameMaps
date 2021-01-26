@@ -1,8 +1,6 @@
 mod warzone2100;
 
-mod file_writer;
-use file_writer::FileWriter;
-
+use compress_tools::*;
 
 fn main() {
 
@@ -37,30 +35,33 @@ fn main() {
 	let map = warzone2100::parse_map_file(filepath);
 	println!("{:?}", map);*/
 
-	//let map_reader = warzone2100::MapReader::new("../data/warzone2100/8c-Mero_SquaredV11.wz");
-	//let warzone2100_map = map_reader.read();
-	//println!("{:?}", warzone2100_map); // this line crashes the terminal inside of VS Code
-	//println!("{:?}", warzone2100_map.game); // better use this line for testing
+	/*let file = std::fs::File::open().unwrap();
+	let list = list_archive_files(file).unwrap();
+	for i in list.iter() {
+		println!("{}", i);
+	}*/
+
 
 	/*
+	let map_reader = warzone2100::MapReader::new("../../../data/warzone2100/8c-Mero_SquaredV11.wz");
+	let warzone2100_map = map_reader.read();
+	//println!("{:?}", warzone2100_map); // this line crashes the terminal inside of VS Code
+	println!("{:?}", warzone2100_map.game); // better use this line for testing
+	*/
+
 	// Test for map deserialization/serialization
-	let map_reader = warzone2100::MapReader::new("../data/warzone2100/8c-Mero_SquaredV11.wz");
+
+
+	let filepath = "../../../data/warzone2100/8c-Mero_SquaredV11.wz";
+	let map_reader = warzone2100::MapReader::new(filepath);
 	let warzone2100_map = map_reader.read();
 
-	let map_writer = warzone2100::MapWriter::new("../data/warzone2100/generated/generated.wz");
-	map_writer.write_dinit_file("../data/warzone2100/generated/dinit.bjo", &warzone2100_map.dinit);
-
-	let map_reader2 = warzone2100::MapReader::new("not used");
-	let dinit = map_reader2.parse_dinit_file("../data/warzone2100/generated/dinit.bjo");
-
-	let dinit_str = format!("{:?}", dinit);
-	let dinit2_str = format!("{:?}", warzone2100_map.dinit);
-	assert_eq!(dinit_str, dinit2_str);
-	*/
+	let map_writer = warzone2100::MapWriter::new("../../../data/warzone2100/generated.wz");
+	map_writer.write(&warzone2100_map, "8c-Mero_SquaredV11");
 
 
 	// FileWriter
-	let mut file_writer = FileWriter::new("../data/generated.txt");
+	/*let mut file_writer = FileWriter::new("../data/generated.txt");
 	file_writer.write_str("Hello World", 11);
 	file_writer.write_u32(std::u32::MAX);
 
@@ -68,7 +69,7 @@ fn main() {
 		file_writer.write_u8(i as u8);
 	}
 
-	file_writer.flush();
+	file_writer.flush();*/
 
 
 	// println!("num_droids: {:?} | {:?}", dinit.num_droids, dinit.droids.len());
