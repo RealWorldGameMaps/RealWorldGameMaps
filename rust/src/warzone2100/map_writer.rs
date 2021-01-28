@@ -3,7 +3,7 @@ use std::io::Write;
 use std::path::PathBuf;
 
 extern crate zip;
-use zip::write::{FileOptions, ZipWriter};
+use zip::{DateTime, write::{FileOptions, ZipWriter}};
 
 #[path = "../file_writer.rs"]
 mod file_writer;
@@ -22,7 +22,7 @@ impl MapWriter {
 
 	pub fn write(&self, warzone2100_map: &Warzone2100Map, map_name: &str) {
 		// get the struct data as u8-vectors
-		let addon_buf = self.get_addon_file();
+		let addon_buf = self.get_addon_file(&warzone2100_map.addon_file);
 		let game_buf = self.get_game_file(&warzone2100_map.game);
 		let dinit_buf = self.get_dinit_file(&warzone2100_map.dinit);
 		let feat_buf = self.get_feat_file(&warzone2100_map.feat);
@@ -86,9 +86,32 @@ impl MapWriter {
 	}
 
 	// TODO: implement actual behavior
-	fn get_addon_file(&self) -> Vec<u8> {
-		let temp: Vec<u8> = Vec::new();
-		temp
+	fn get_addon_file(&self, addon_details: &AddonDetails) -> Vec<u8> {
+		let mut out = String::from(&addon_details.comment);
+
+		for level in addon_details.levels.iter() {
+			out.push_str("\n\nlevel ");
+			out.push_str(&level.level);
+
+			out.push_str("\nplayers ");
+			out.push_str(&level.players.to_string());
+
+			out.push_str("\ntype ");
+			out.push_str(&level.type_num.to_string());
+
+			out.push_str("\ndataset ");
+			out.push_str(&level.dataset);
+
+			out.push_str("\ngame ");
+			out.push_str(&level.game);
+
+			for data in level.data.iter() {
+				out.push_str("\ndata ");
+				out.push_str(&data);
+			}
+		}
+
+		out.as_bytes().to_vec()
 	}
 
 	fn get_game_file(&self, game: &Game) -> Vec<u8> {

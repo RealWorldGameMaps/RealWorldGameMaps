@@ -160,4 +160,21 @@ pub struct Warzone2100Map {
 	pub game: Game,
 	pub map: Map,
 	pub ttype: TType,
+	pub addon_file: AddonDetails,
+}
+
+#[derive(Debug)]
+pub struct AddonDetails {
+	pub comment: String,
+	pub levels: Vec<LevelDetails>,
+}
+
+#[derive(Debug)]
+pub struct LevelDetails {
+	pub level: String,
+	pub players: u8,
+	pub type_num: u8,
+	pub dataset: String,
+	pub game: String,
+	pub data: Vec<String>,
 }

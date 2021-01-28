@@ -1,7 +1,10 @@
-use std::convert::TryInto;
+use std::{collections::HashMap, convert::TryInto};
 use std::ffi::OsStr;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
+use std::io::Read;
+use std::convert::From;
+use std::u8;
 
 extern crate compress_tools;
 use compress_tools::*;
@@ -38,9 +41,14 @@ impl MapReader {
 			.unwrap()
 			.path();
 
+
+		let addon_file = self.parse_addon_file(addon_file_path.to_str().unwrap());
+
+		// get file name
+		let addon_file_name = addon_file_path.file_name().and_then(OsStr::to_str).unwrap();
 		// extract map name
-		let filename = addon_file_path.file_name().and_then(OsStr::to_str).unwrap();
-		let map_name = String::from(filename).replace(".addon.lev", "");
+		let map_name = String::from(addon_file_name).replace(".addon.lev", "");
+
 
 		// build paths, read files and parse the data into structs
 		let mut path = PathBuf::new();
@@ -81,7 +89,72 @@ impl MapReader {
 			map,
 			game,
 			ttype,
+			addon_file,
 		}
+	}
+
+	pub fn parse_addon_file(&self, filepath: &str) -> AddonDetails {
+		let mut file = OpenOptions::new().read(true).open(filepath).unwrap();
+
+		let mut content = String::new();
+		file.read_to_string(&mut content).unwrap();
+
+		let mut addon_details = AddonDetails {
+			comment: String::new(),
+			levels: Vec::new(),
+		};
+
+		let mut level = String::from("");
+		let mut players = 0 as u8;
+		let mut type_num = 0 as u8;
+		let mut dataset = String::from("");
+		let mut game= String::from("");
+		let mut data: Vec<String> = Vec::new();
+
+		for line in content.split("\n") {
+			let mut iter = line.split_whitespace();
+			let key_option = iter.next();
+			let value_option = iter.next();
+
+			if key_option == None || value_option == None {
+				addon_details.levels.push(LevelDetails {
+					level: level.clone(),
+					players: players.clone(),
+					type_num: type_num.clone(),
+					dataset: dataset.clone(),
+					game: game.clone(),
+					data: data.clone()
+				});
+
+				data = Vec::new();
+
+				continue;
+			}
+
+			let key = key_option.unwrap();
+			let value = value_option.unwrap();
+
+			if key == "level" {
+				level = String::from(value);
+			}
+			if key == "players" {
+				players = value.parse().unwrap();
+			}
+			if key == "type" {
+				type_num = value.parse().unwrap();
+			}
+			if key == "dataset" {
+				dataset = String::from(dataset);
+			}
+			if key == "game" {
+				game = String::from(value);
+			}
+			if key == "data" {
+				data.push(String::from(value));
+			}
+		}
+
+		addon_details
 	}
 
 	pub fn parse_dinit_file(&self, filepath: &str) -> Dinit {
