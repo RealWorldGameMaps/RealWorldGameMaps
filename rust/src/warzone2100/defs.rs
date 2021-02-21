@@ -1,22 +1,22 @@
 #[derive(Debug)]
 pub struct TType {
-	pub magic: String, // "ttyp"
+	pub magic: String, // [char; 4] | "ttyp"
 	pub terrain_version: u32,
 	pub num_terrain_types: u32,
-	pub terrain_types: Vec<u16>,
+	pub terrain_types: Vec<u16>, // [u16; num_terrain_types]
 }
 
 #[derive(Debug)]
 pub struct Struct {
-	pub magic: String, // "stru"
+	pub magic: String, // [char; 4] | "stru"
 	pub struct_version: u32,
 	pub num_structures: u32,
-	pub structures: Vec<Structure>,
+	pub structures: Vec<Structure>, // [Structure; num_structures]
 }
 
 #[derive(Debug)]
 pub struct Structure {
-	pub name: String, // [char; if struct_version <= 19 { 40 } else { 60 }],
+	pub name: String, // [char; if struct_version <= 19 { 40 } else { 60 }]
 	pub id: u32,
 	pub coordinate: Coordinate,
 	pub direction: u32,
@@ -51,7 +51,7 @@ pub struct Structure {
 	pub _dummy_time_start_hold: u32,    // if (struct_version >= 12)
 
 	pub visibility: [u8; 8],             // if (struct_version >= 14)
-	pub research_name: String,           // [char; if struct_version <= 19 { 40 } else { 60 }], // if (struct_version >= 15)
+	pub research_name: String,           // if (struct_version >= 15) | [char; if struct_version <= 19 { 40 } else { 60 }]
 	pub _dummy_dummy_3: i16,             // if (struct_version >= 17)
 	pub _dummy_structure_padding_7: i16, // if (struct_version >= 15)
 	pub _dummy_dummy_4: u32,             // if (struct_version >= 21)
@@ -59,15 +59,15 @@ pub struct Structure {
 
 #[derive(Debug)]
 pub struct Feat {
-	pub magic: String, // "feat"
+	pub magic: String, // [char; 4] | "feat"
 	pub feat_version: u32,
 	pub num_features: u32,
-	pub features: Vec<Feature>, // Capacity: num_features
+	pub features: Vec<Feature>, // [Feature; num_features]
 }
 
 #[derive(Debug)]
 pub struct Feature {
-	pub name: String, // [char; if feat_version <= 19 { 40 } else { 60 }],
+	pub name: String, // [char; if feat_version <= 19 { 40 } else { 60 }]
 	pub id: u32,
 	pub coordinate: Coordinate,
 	pub direction: u32,
@@ -88,14 +88,14 @@ pub struct Coordinate {
 
 #[derive(Debug)]
 pub struct Map {
-	pub magic: String, // "map "
+	pub magic: String, // [char; 4] | "map "
 	pub map_version: u32,
 	pub width: u32,
 	pub height: u32,
 	pub tiles: Vec<Tile>, // [Tile; width * height],
 	pub gw_version: u32,
 	pub num_gateways: u32,
-	pub gateways: Vec<Gateway>, // Capacity: num_gateways
+	pub gateways: Vec<Gateway>, // [Gateway; num_gateways]
 }
 
 #[derive(Debug)]
@@ -114,15 +114,15 @@ pub struct Gateway {
 
 #[derive(Debug)]
 pub struct Dinit {
-	pub magic: String, // "dint"
+	pub magic: String, // [char; 4] | "dint"
 	pub droid_version: u32,
 	pub num_droids: u32,
-	pub droids: Vec<Droid>, // Capacity: num_droids
+	pub droids: Vec<Droid>, // [Droid; num_droids]
 }
 
 #[derive(Debug)]
 pub struct Droid {
-	pub name: String,
+	pub name: String, // [char; if feat_version <= 19 { 40 } else { 60 }]
 	pub id: u32,
 	pub coordinate: Coordinate,
 	pub direction: u32,
@@ -134,7 +134,7 @@ pub struct Droid {
 
 #[derive(Debug)]
 pub struct Game {
-	pub magic: String, // "game"
+	pub magic: String, // [char; 4] | "game"
 	pub game_version: u32,
 	pub game_time: u32,
 	pub game_type: u32,
@@ -142,8 +142,8 @@ pub struct Game {
 	pub scroll_min_y: i32,
 	pub scroll_max_x: u32,
 	pub scroll_max_y: u32,
-	pub level_name: String,
-	pub other: Vec<Other>, // constant size of 8, can we make this of type [Other; 8] ??
+	pub level_name: String, // [char; 20]
+	pub other: Vec<Other>, // [Other; 8] or [Other; 0]
 }
 
 #[derive(Debug)]
