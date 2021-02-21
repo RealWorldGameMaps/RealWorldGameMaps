@@ -1,6 +1,9 @@
+type Magic = String; // [char; 4]
+type Name = String; // [char; if *_version <= 19 { 40 } else { 60 }]
+
 #[derive(Debug)]
 pub struct TType {
-	pub magic: String, // [char; 4] | "ttyp"
+	pub magic: Magic, // "ttyp"
 	pub terrain_version: u32,
 	pub num_terrain_types: u32,
 	pub terrain_types: Vec<u16>, // [u16; num_terrain_types]
@@ -8,7 +11,7 @@ pub struct TType {
 
 #[derive(Debug)]
 pub struct Struct {
-	pub magic: String, // [char; 4] | "stru"
+	pub magic: Magic, // "stru"
 	pub struct_version: u32,
 	pub num_structures: u32,
 	pub structures: Vec<Structure>, // [Structure; num_structures]
@@ -16,7 +19,7 @@ pub struct Struct {
 
 #[derive(Debug)]
 pub struct Structure {
-	pub name: String, // [char; if struct_version <= 19 { 40 } else { 60 }]
+	pub name: Name, // struct_version
 	pub id: u32,
 	pub coordinate: Coordinate,
 	pub direction: u32,
@@ -51,7 +54,7 @@ pub struct Structure {
 	pub _dummy_time_start_hold: u32,    // if (struct_version >= 12)
 
 	pub visibility: [u8; 8],             // if (struct_version >= 14)
-	pub research_name: String,           // if (struct_version >= 15) | [char; if struct_version <= 19 { 40 } else { 60 }]
+	pub research_name: Name,             // if (struct_version >= 15) | struct_version
 	pub _dummy_dummy_3: i16,             // if (struct_version >= 17)
 	pub _dummy_structure_padding_7: i16, // if (struct_version >= 15)
 	pub _dummy_dummy_4: u32,             // if (struct_version >= 21)
@@ -59,7 +62,7 @@ pub struct Structure {
 
 #[derive(Debug)]
 pub struct Feat {
-	pub magic: String, // [char; 4] | "feat"
+	pub magic: Magic, // "feat"
 	pub feat_version: u32,
 	pub num_features: u32,
 	pub features: Vec<Feature>, // [Feature; num_features]
@@ -67,7 +70,7 @@ pub struct Feat {
 
 #[derive(Debug)]
 pub struct Feature {
-	pub name: String, // [char; if feat_version <= 19 { 40 } else { 60 }]
+	pub name: Name, // feat_version
 	pub id: u32,
 	pub coordinate: Coordinate,
 	pub direction: u32,
@@ -88,7 +91,7 @@ pub struct Coordinate {
 
 #[derive(Debug)]
 pub struct Map {
-	pub magic: String, // [char; 4] | "map "
+	pub magic: Magic, // "map "
 	pub map_version: u32,
 	pub width: u32,
 	pub height: u32,
@@ -114,7 +117,7 @@ pub struct Gateway {
 
 #[derive(Debug)]
 pub struct Dinit {
-	pub magic: String, // [char; 4] | "dint"
+	pub magic: Magic, // "dint"
 	pub droid_version: u32,
 	pub num_droids: u32,
 	pub droids: Vec<Droid>, // [Droid; num_droids]
@@ -122,7 +125,7 @@ pub struct Dinit {
 
 #[derive(Debug)]
 pub struct Droid {
-	pub name: String, // [char; if feat_version <= 19 { 40 } else { 60 }]
+	pub name: Name, // droid_version
 	pub id: u32,
 	pub coordinate: Coordinate,
 	pub direction: u32,
@@ -134,7 +137,7 @@ pub struct Droid {
 
 #[derive(Debug)]
 pub struct Game {
-	pub magic: String, // [char; 4] | "game"
+	pub magic: Magic, // "game"
 	pub game_version: u32,
 	pub game_time: u32,
 	pub game_type: u32,
