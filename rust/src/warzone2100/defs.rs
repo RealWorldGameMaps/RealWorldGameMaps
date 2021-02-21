@@ -3,7 +3,7 @@ pub struct TType {
 	pub magic: String, // "ttyp"
 	pub terrain_version: u32,
 	pub num_terrain_types: u32,
-	pub terrain_types: Vec<u8>,
+	pub terrain_types: Vec<u16>,
 }
 
 #[derive(Debug)]
