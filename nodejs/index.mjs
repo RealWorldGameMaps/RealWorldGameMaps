@@ -1,6 +1,6 @@
-import MapReader from './src/MapReader';
-import MapWriter from './src/MapWriter';
-import AsciiMapDrawer from './src/AsciiMapDrawer';
+import MapReader from './src/MapReader.mjs';
+import MapWriter from './src/MapWriter.mjs';
+import AsciiMapDrawer from './src/AsciiMapDrawer.mjs';
 
 const MAP_FILES_PATH = '../data/0ad/';
 

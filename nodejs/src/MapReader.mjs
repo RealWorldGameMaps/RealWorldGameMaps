@@ -1,5 +1,5 @@
 import fs from 'fs';
-import MapObject from './MapObject';
+import MapObject from './MapObject.mjs';
 
 export default class MapReader {
 
