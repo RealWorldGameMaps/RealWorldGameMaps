@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import convert from 'color-convert';
 
 const MAX_HUE = 360;
 const MAX_SATURATION = 100;
@@ -63,7 +64,7 @@ export default class AsciiMapDrawer {
 
   mapColorRange(value, options, coor) {
     const hue = (this.scale(value, 0, 300) + 240) % MAX_HUE;
-    return chalk.hsv(hue, MAX_SATURATION, MAX_VALUE)('█');
+    return chalk.hex(convert.hsv.hex(hue, MAX_SATURATION, MAX_VALUE))('█');
   }
 
   mapAsciiRange(value, options, coor) {
@@ -87,7 +88,7 @@ export default class AsciiMapDrawer {
     // const greyIndex = this.scale(value, 0, greyRange.length - 1);
     // const grey = greyRange[greyIndex];
     const hue = (this.scale(value, 0, 300) + 240) % MAX_HUE;
-    return chalk.hsv(hue, MAX_SATURATION, MAX_VALUE)('█');
+    return chalk.hex(convert.hsv.hex(hue, MAX_SATURATION, MAX_VALUE))('█');
   }
 
   getCharFromScaledValuesString(value, valuesString) {
