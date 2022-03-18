@@ -110,7 +110,7 @@ export default class MapWriter {
 
   writeFile(mapFilePath, callback) {
     this.setBuffer();
-    fs.writeFile(mapFilePath, new Buffer(this.arrayBuffer), (err) => {
+    fs.writeFile(mapFilePath, Buffer.from(this.arrayBuffer), (err) => {
       callback(err);
     });
   }
